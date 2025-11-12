@@ -7,15 +7,41 @@ import pickle
 def parking():
    
 
-    video_path = ""
+    rect_width, rect_height = 107, 48
+    carp_park_positions_path = "src/estacionamentoPos"
+    video_path = "src/estacionamento.mp4"
 
+   classifier = Park_classifier(carp_park_positions_path, rect_width, rect_height)
 
-    cap = cv2.VideoCapture(video_path)
-    while True:
+   cap = cv2.VideoCapture(video_path)
+   while True:
 
-    
+        # reading the video frame by frame
+        ret, frame = cap.read()
+
+        # check is there a retval
+        if not ret:break
         
-        cv2.imshow("Identificador/Contador de vagas")
+        # prosessing the frames to prepare classify
+        prosessed_frame = classifier.implement_process(frame)
+        
+        # drawing car parks according to its status 
+        denoted_image = classifier.classify(image=frame, prosessed_image = prosessed_frame)
+        
+        # displaying the results
+        cv2.imshow("Imagem de estacionamentos desenhada de acordo com as vagas vazias", denoted_image)
+        
+        # exit condition
+        k = cv2.waitKey(1)
+        if k & 0xFF == ord('q'):
+            break
+        
+        if k & 0xFF == ord('s'):
+            cv2.imwrite("output.jpg", denoted_image)
+
+    # re-allocating sources
+    cap.release()
+    cv2.destroyAllWindows()
         
 
 
