@@ -16,22 +16,16 @@ def parking():
    cap = cv2.VideoCapture(video_path)
    while True:
 
-        # reading the video frame by frame
         ret, frame = cap.read()
 
-        # check is there a retval
         if not ret:break
         
-        # prosessing the frames to prepare classify
         prosessed_frame = classifier.implement_process(frame)
         
-        # drawing car parks according to its status 
         denoted_image = classifier.classify(image=frame, prosessed_image = prosessed_frame)
         
-        # displaying the results
         cv2.imshow("Imagem de estacionamentos desenhada de acordo com as vagas vazias", denoted_image)
         
-        # exit condition
         k = cv2.waitKey(1)
         if k & 0xFF == ord('q'):
             break
@@ -39,7 +33,6 @@ def parking():
         if k & 0xFF == ord('s'):
             cv2.imwrite("output.jpg", denoted_image)
 
-    # re-allocating sources
     cap.release()
     cv2.destroyAllWindows()
         
