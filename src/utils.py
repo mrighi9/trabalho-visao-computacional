@@ -10,6 +10,7 @@ class EstacionaClassifier:
         self.rect_width = rect_width
         self.rect_height = rect_height
         self.posicao_carro_vaga = self._ler_posicoes(posicoes_path)
+        self.posicao_carro_vaga_path = posicoes_path
 
     def _ler_posicoes(self, caminho: str | Path) -> List:
         try:
@@ -66,8 +67,9 @@ class Coordinate_denoter():
     def __init__(self, rect_width:int=107, rect_height:int=48, posicoes_path:pickle="src/estacionamentoPos"):
         self.rect_width = rect_width
         self.rect_height = rect_height
-        self.posicoes_path = posicoes_path
         self.posicao_carro_vaga = list()
+        self.posicao_carro_vaga_path = posicoes_path
+
         
     def ler_posicoes(self)->list:
         

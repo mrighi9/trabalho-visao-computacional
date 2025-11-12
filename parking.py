@@ -24,7 +24,6 @@ def parking():
         
         prosessed_frame = classifier.implement_process(frame)
         
-        # call the correct method name and pass the parameter name expected by the class
         denoted_image = classifier.classificar(image=frame, imagem_proce=prosessed_frame)
         
         cv2.imshow("Imagem de estacionamentos desenhada de acordo com as vagas vazias", denoted_image)
