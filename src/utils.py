@@ -61,10 +61,40 @@ class EstacionaClassifier:
         dil = cv2.dilate(thr, kernel, iterations=1)
         return dil
     
-    class Coordinate_denoter():
+class Coordinate_denoter():
 
     def __init__(self, rect_width:int=107, rect_height:int=48, posicoes_path:pickle="src/estacionamentoPos"):
         self.rect_width = rect_width
         self.rect_height = rect_height
         self.posicoes_path = posicoes_path
         self.posicao_carro_vaga = list()
+        
+    def ler_posicoes(self)->list:
+        
+        try:
+            self.posicao_carro_vaga = pickle.load(open(self.posicao_carro_vaga_path, 'rb'))
+        except Exception as e:
+            print(f"Error: {e}\n Falha ao ler o arquivo de posições do estacionamento.")
+
+        return self.posicao_carro_vaga
+    def mouseClick(self, events:int, x:int, y:int, flags:int, params:int):
+
+        
+        if events==cv2.EVENT_LBUTTONDOWN:
+            self.posicao_carro_vaga.append((x,y))
+        
+        if events==cv2.EVENT_MBUTTONDOWN:
+
+            for index, pos in enumerate(self.posicao_carro_vaga):
+                
+                x1,y1=pos
+                
+                is_x_in_range= x1 <= x <= x1+self.rect_width
+                is_y_in_range= y1 <= y <= y1+self.rect_height
+
+                if is_x_in_range and is_y_in_range:
+                    self.posicao_carro_vaga.pop(index)
+
+        with open(self.posicao_carro_vaga_path,'wb') as f:
+            pickle.dump(self.posicao_carro_vaga,f)
+        
