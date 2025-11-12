@@ -18,6 +18,37 @@ class EstacionaClassifier:
         except Exception as e:
             print(f"Erro: {e}\nOcorreu um erro ao ler o arquivo de posições do estacionamento.")
             return []
+        
+    def classificar(self, image:np.ndarray, imagem_proce:np.ndarray,threshold:int=900)->np.ndarray:
+        
+        EstacionamentoVazio = 0
+        for x, y in self.posicao_carro_vaga:
+            
+           
+            col_start, col_stop = x, x + self.rect_width
+            row_start, row_stop = y, y + self.rect_height
+
+            
+            crop=imagem_proce[row_start:row_stop, col_start:x+col_stop]
+            
+            
+            count=cv2.countNonZero(crop)
+            
+           
+            EstacionamentoVazio, color, thick = [EstacionamentoVazio + 1, (0,255,0), 5] if count<threshold else [EstacionamentoVazio, (0,0,255), 2]
+                
+            
+            start_point, stop_point = (x,y), (x+self.rect_width, y+self.rect_height)
+            cv2.rectangle(image, start_point, stop_point, color, thick)
+        
+        
+        
+        cv2.rectangle(image,(45,30),(250,75),(180,0,180),-1)
+
+        ratio_text = f'Free: {EstacionamentoVazio}/{len(self.posicao_carro_vaga)}'
+        cv2.putText(image,ratio_text,(50,60),cv2.FONT_HERSHEY_SIMPLEX,0.9,(255,255,255),2)
+        
+        return image    
 
     def implement_process(self, image: np.ndarray) -> np.ndarray:
         kernel = np.ones((3, 3), np.uint8)
@@ -29,3 +60,11 @@ class EstacionaClassifier:
         thr = cv2.medianBlur(thr, 5)
         dil = cv2.dilate(thr, kernel, iterations=1)
         return dil
+    
+    class Coordinate_denoter():
+
+    def __init__(self, rect_width:int=107, rect_height:int=48, posicoes_path:pickle="src/estacionamentoPos"):
+        self.rect_width = rect_width
+        self.rect_height = rect_height
+        self.posicoes_path = posicoes_path
+        self.posicao_carro_vaga = list()

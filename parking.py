@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import pickle
+from src.utils import EstacionaClassifier
 
 
 
@@ -8,10 +9,10 @@ def parking():
    
 
     rect_width, rect_height = 107, 48
-    carp_park_positions_path = "src/estacionamentoPos"
+    carro_estaciona_posicao = "src/estacionamentoPos"
     video_path = "src/estacionamento.mp4"
 
-   classifier = Park_classifier(carp_park_positions_path, rect_width, rect_height)
+   classifier = EstacionaClassifier(carro_estaciona_posicao, rect_width, rect_height)
 
    cap = cv2.VideoCapture(video_path)
    while True:
