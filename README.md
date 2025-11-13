@@ -20,7 +20,7 @@ pip install -r requirements.txt
 ```
 - Rode o código com o comando abaixo.
 
-`app.py`
+`parking.py`
 
  
 ## Exemplo de resultados
