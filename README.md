@@ -1,4 +1,4 @@
-# Car-parking-Detection
+# Detector-Vaga-Estacionamento
 - Esse projeto busca identificar vagas de estacionamento vazias utilizando tecnologias de visão computacional.
 
 - Clone o repositório.
