@@ -1,5 +1,7 @@
 import sys
 import cv2
+import sys
+import os
 import numpy as np
 from pathlib import Path
 from PyQt5.QtWidgets import (
@@ -11,6 +13,11 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal, QPoint, QRect
 from PyQt5.QtGui import QFont, QPixmap, QImage, QPainter, QPen, QColor
 from src.utils import EstacionaClassifier, Coordinate_denoter
 import pickle
+
+if getattr(sys, 'frozen', False):
+    BASE_PATH = sys._MEIPASS
+else:
+    BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class ClickableLabel(QLabel):
@@ -393,10 +400,14 @@ class ParkingAnalyzerUI(QMainWindow):
             
             # carregar posições existentes
             try:
-                with open("src/estacionamentoPos_4points", 'rb') as f:
+                with open(os.path.join(BASE_PATH, "src", "estacionamentoPos_4points"), 'rb') as f:
                     self.parking_spots = pickle.load(f)
-            except:
+            except FileNotFoundError:
                 self.parking_spots = []
+                print("⚠️ Arquivo de vagas não encontrado. Inicie marcando vagas.")
+            except Exception as e:
+                self.parking_spots = []
+                print(f"⚠️ Erro ao carregar vagas: {e}")
             
             # carregar primeiro frame
             cap = cv2.VideoCapture(file_path)
@@ -454,7 +465,7 @@ class ParkingAnalyzerUI(QMainWindow):
     def save_marks(self):
         try:
             # salvar formato de 4 pontos
-            with open("src/estacionamentoPos_4points", 'wb') as f:
+            with open(os.path.join(BASE_PATH, "src", "estacionamentoPos_4points"), 'wb') as f:
                 pickle.dump(self.parking_spots, f)
             
             # converter para formato compatível
@@ -466,13 +477,11 @@ class ParkingAnalyzerUI(QMainWindow):
                 y = int(cy - h/2)
                 converted_spots.append((x, y, int(w), int(h), angle))
             
-            # salvar formato completo
-            with open("src/estacionamentoPos_full", 'wb') as f:
+            with open(os.path.join(BASE_PATH, "src", "estacionamentoPos_full"), 'wb') as f:
                 pickle.dump(converted_spots, f)
             
-            # formato compatível 
             positions = [(x, y) for x, y, w, h, angle in converted_spots]
-            with open("src/estacionamentoPos", 'wb') as f:
+            with open(os.path.join(BASE_PATH, "src", "estacionamentoPos"), 'wb') as f:
                 pickle.dump(positions, f)
             
             QMessageBox.information(self, "Sucesso", f"✅ {len(self.parking_spots)} vagas salvas!")
@@ -488,7 +497,7 @@ class ParkingAnalyzerUI(QMainWindow):
             QMessageBox.warning(self, "Aviso", "Marque pelo menos uma vaga!")
             return
         
-        posicoes_path = "src/estacionamentoPos"
+        posicoes_path = os.path.join(BASE_PATH, "src", "estacionamentoPos")
         
         try:
             self.classifier = EstacionaClassifier(posicoes_path)
